@@ -1,0 +1,1662 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Universal Framework for Visual Programming Languages</title>
+
+    <link rel="icon" type="image/x-icon" href="vplicon.png">
+    <!-- <link rel="stylesheet" href="vplstyle.css"> -->
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Georgia, serif;
+            overflow: hidden;
+        }
+
+        .container {
+            display: grid;
+
+            grid-template-columns: 40px 1fr calc(25vw - 40px) 40px;
+            grid-template-rows: 40px calc(60vh - 40px) calc(40vh - 40px) 40px;
+
+            height: 100vh;
+        }
+
+        .module-title-bar {
+            padding: 5px;
+            height: 30px;
+        }
+
+
+
+
+
+        .title-bar {
+            grid-column: 1 / 5;
+            grid-row: 1 / 2;
+
+            display: grid;
+            grid-template-columns: 1fr 4fr 1fr;
+
+            background-color: #333;
+            color: white;
+
+            height: 40px;
+        }
+
+        .app-icon {
+            padding-left: 4px;
+            padding-top: 6px;
+        }
+
+        .app-icon img {
+            max-width: 27px;
+            max-height: 27px;
+        }
+
+        .app-name {
+            justify-self: center;
+            padding: 10px;
+        }
+
+        .window-controls {
+            justify-self: right;
+            padding: 9px;
+        }
+
+        .window-controls button {
+            background-color: transparent;
+            color: white;
+
+            border: none;
+            padding: 0 10px;
+
+            cursor: pointer;
+        }
+
+
+
+
+
+        .menu-bar {
+            grid-column: 1 / 2;
+            grid-row: 2 / 5;
+
+            background-color: #444;
+
+            padding: 5px;
+        }
+
+        .button-container {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .icon-button {
+            background-color: #555;
+            color: white;
+
+            width: 30px;
+            height: 30px;
+
+            margin-bottom: 5px;
+
+            border: none;
+            padding: 4px;
+
+            cursor: pointer;
+        }
+
+
+
+
+        .workspace {
+            display: flex;
+            flex-direction: column;
+
+            grid-column: 2 / 4;
+            grid-row: 2 / 4;
+
+            background-color: #d1d1d1;
+            overflow: hidden;
+        }
+
+
+
+
+
+        .library {
+            grid-column: 3 / 5;
+            grid-row: 2 / 3;
+
+            background-color: #666;
+            color: white;
+
+            transition: width 0.3s ease;
+
+            overflow-y: auto;
+            max-width: 25vw;
+
+            z-index: 1;
+        }
+
+        .library .icon-button {
+            background-color: #666;
+        }
+
+        #library-title {
+            display: inline;
+        }
+
+        #library-output {
+            background-color: #888;
+            color: #fff;
+
+            margin: 10px 10px 5px 10px;
+            padding: 10px;
+
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+
+            overflow-y: auto;
+            overflow-x: auto;
+
+            height: calc(100% - 50px);
+            width: calc(100% - 20px);
+
+            max-width: calc(100% - 20px);
+
+            font-family: monospace;
+        }
+
+
+
+
+        .console {
+            grid-column: 2 / 3;
+            grid-row: 4 / 5;
+
+            background-color: #333;
+            color: white;
+
+            max-width: calc(75vw - 40px);
+
+            z-index: 1;
+        }
+
+        .console .icon-button {
+            background-color: #333;
+        }
+
+        .console-output {
+            background-color: #444;
+            color: #fff;
+
+            margin: 10px 10px 0px 10px;
+            padding: 10px;
+            overflow-y: auto;
+            overflow-x: auto;
+
+            height: calc(100% - 90px);
+            width: calc(100% - 20px);
+
+            max-width: calc(100% - 20px);
+
+            display: block;
+            font-family: monospace;
+        }
+
+        .console-output::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+
+        .console-output::-webkit-scrollbar-track {
+            background: #333;
+        }
+
+        .console-output::-webkit-scrollbar-thumb {
+            background-color: #888;
+            border-radius: 10px;
+            border: 2px solid #333;
+        }
+
+        .console-output::-webkit-scrollbar-thumb:hover {
+            background-color: #555;
+        }
+
+        .console-output::-webkit-scrollbar-corner {
+            background-color: #333;
+        }
+
+        #console-input {
+            color: #F5F5F5;
+            background-color: #111;
+
+            width: calc(100% - 20px);
+            height: 30px;
+
+            margin: 10px 10px 10px 10px;
+            padding: 5px;
+            box-shadow: none;
+
+            font-family: monospace;
+        }
+
+
+
+
+
+        .panel {
+            grid-column: 3 / 5;
+            grid-row: 3 / 5;
+
+            /* background-color: #888; */
+            background-color: #444;
+            color: white;
+
+            overflow-y: auto;
+            max-width: 25vw;
+
+            transition: height 0.3s ease;
+
+            z-index: 2;
+        }
+
+        .panel .icon-button {
+            background-color: #444;
+        }
+
+        #panel-output {
+            background-color: #333;
+            color: #fff;
+
+            margin: 10px 10px 10px 10px;
+            padding: 10px;
+            overflow-y: auto;
+            overflow-x: auto;
+
+            height: calc(100% - 50px);
+            width: calc(100% - 20px);
+
+            max-width: calc(100% - 20px);
+
+            font-family: monospace;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div class="container">
+        <header class="title-bar">
+            <div class="app-icon"><img src="vplicon.png" alt="Icon by iconsmind: https://www.freepik.com/icons/vpl">
+            </div>
+            <div class="app-name">Universal Framework for Visual Programming Languages</div>
+            <div class="window-controls">
+                <button class="minimize" title="Minimize">
+                    <i class="fa fa-minus"></i>
+                </button>
+                <button class="maximize" title="Maximize">
+                    <i class="fa fa-window-restore"></i>
+                </button>
+                <button class="close" title="Close">
+                    <i class="fa fa-remove"></i>
+                </button>
+            </div>
+        </header>
+
+        <aside class="menu-bar">
+            <div class="button-container">
+
+                <button class="icon-button" title="New Program" id="new-canvas">
+                    <i class="fas fa-file"></i>
+                </button>
+                <input type="file" id="canvas-file" style="display:none" />
+                <button class="icon-button" title="Open Program" id="open-canvas">
+                    <i class="fas fa-folder-open"></i>
+                </button>
+                <button class="icon-button" title="Save Program" id="save-canvas">
+                    <i class="fas fa-save"></i>
+                </button>
+
+                <!-- <hr style="margin-bottom: 5px; color: black; background-color: black;"> -->
+                <!-- <button class="icon-button" title="Grab Canvas" id="grab-canvas">
+                    <i class="fas fa-hand-paper-o" id="canvas-ptr"></i>
+                </button> -->
+                <button class="icon-button" title="Go To Center" id="back-center">
+                    <i class="fas fa-arrows"></i>
+                </button>
+                <button class="icon-button" title="Zoom In" id="zoom-in">
+                    <i class="fas fa-search-plus"></i>
+                </button>
+                <button class="icon-button" title="Zoom Out" id="zoom-out">
+                    <i class="fas fa-search-minus"></i>
+                </button>
+
+                <!-- <hr style="margin-bottom: 5px;"> -->
+                <button class="icon-button" title="Delete Object" id="del-obj">
+                    <i class="fas fa-trash-alt"></i>
+                </button>
+                <button class="icon-button" title="Connect Objects" id="connect-btn">
+                    <i class="fas fa-link"></i>
+                </button>
+                <button class="icon-button" title="Disconnect Objects">
+                    <i class="fas fa-ban"></i>
+                </button>
+
+                <!-- <hr style="margin-bottom: 5px;"> -->
+                <input type="file" id="load-file" style="display:none" />
+                <button class="icon-button" title="Load Components" id="load-btn">
+                    <i class="fas fa-upload"></i>
+                </button>
+                <button class="icon-button" title="Unload Components" id="save-btn">
+                    <i class="fas fa-download"></i>
+                </button>
+
+                <!-- <hr style="margin-bottom: 5px;"> -->
+                <button class="icon-button" title="Clear Console" id="clear-console">
+                    <i class="fas fa-edit"></i>
+                </button>
+                <button class="icon-button" title="Compile & Download Code">
+                    <i class="fas fa-code"></i>
+                </button>
+                <button class="icon-button" title="Compile & Execute Code">
+                    <i class="fas fa-play"></i>
+                </button>
+            </div>
+        </aside>
+
+        <main class="workspace">
+            <canvas id="canvas"></canvas>
+            <!-- <button>Hello 1</button>
+            <button>Hello 2</button>
+            <button>Hello 3</button>
+            <button>Hello 4</button>
+            <button>Hello 5</button>
+            <button>Hello 6</button>
+            <button>Hello 7</button>
+            <button>Hello 8</button>
+            <button>Hello 9</button>
+            <button>Hello 0</button>
+            <button>Hello 1</button>
+            <button>Hello 2</button>
+            <button>Hello 3</button>
+            <button>Hello 4</button>
+            <button>Hello 5</button>
+            <button>Hello 6</button>
+            <button>Hello 7</button>
+            <button>Hello 8</button>
+            <button>Hello 9</button>
+            <button>Hello 0</button>
+            <button>Hello 1</button>
+            <button>Hello 2</button>
+            <button>Hello 3</button>
+            <button>Hello 4</button>
+            <button>Hello 5</button>
+            <button>Hello 6</button>
+            <button>Hello 7</button>
+            <button>Hello 8</button>
+            <button>Hello 9</button>
+            <button>Hello 0</button>
+            <button>Hello 1</button>
+            <button>Hello 2</button> -->
+        </main>
+
+        <aside class="library">
+            <div class="module-title-bar">
+                <button class="icon-button" id="toggle-library" title="Hide Library">
+                    <i class="fas fa-toggle-right" id="lib-tog"></i>
+                </button>
+                <div id="library-title">Component Library</div>
+            </div>
+            <div id="library-output">
+                <div data-component="rect" draggable="true"><button class="image-button"
+                        id="rect-button">Rectangle</button></div>
+                <div data-component="circle" draggable="true"><button class="image-button"
+                        id="circle-button">Circle</button></div>
+                <div data-component="triangle" draggable="true"><button class="image-button"
+                        id="triangle-button">Triangle</button></div>
+            </div>
+        </aside>
+
+        <div class="console">
+            <div class="module-title-bar">
+                <button class="icon-button" id="toggle-console" title="Show Console">
+                    <i class="fas fa-toggle-up" id="con-tog"></i>
+                </button>Console
+            </div>
+            <div class="console-output" id="console-output"></div>
+            <input type="text" id="console-input" placeholder="Type your command here and press Enter"
+                autocomplete="off">
+        </div>
+
+        <div class="panel">
+            <div class="module-title-bar">
+                <button class="icon-button" id="toggle-panel" title="Hide Panel">
+                    <i class="fas fa-toggle-down" id="pan-tog"></i>
+                </button>Properties Panel
+            </div>
+            <div id="panel-output">
+                <!-- <input type="number" id="zoom-input" placeholder="" autocomplete="off"> -->
+                <div>(width,height) = (<span id="width"></span>,<span id="height"></span>)</div>
+                <div>(vpt[4],vpt[5]) = (<span id="vptx"></span>,<span id="vpty"></span>)</div>
+                <div>(vpt[0],vpt[3]) = (<span id="zmx"></span>,<span id="zmy"></span>)</div>
+                <div>(centX,centY) = (<span id="centx"></span>,<span id="centy"></span>)</div>
+                <div>(clntX,clntY) = (<span id="clntx"></span>,<span id="clnty"></span>)</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/3.6.2/fabric.min.js"></script>
+
+    <script>
+        const consoleOutputDiv = document.getElementById('console-output');
+        const originalConsoleLog = console.log;
+        const originalConsoleError = console.error;
+
+        console.log = function (message) {
+            originalConsoleLog.apply(console, arguments);
+
+            const logMessage = document.createElement('div');
+            logMessage.textContent = [...arguments].join(' ');
+            consoleOutputDiv.appendChild(logMessage);
+
+            consoleOutputDiv.scrollTop = consoleOutputDiv.scrollHeight;
+        };
+
+        console.error = function (message) {
+            originalConsoleError.apply(console, arguments);
+
+            const logMessage = document.createElement('div');
+            logMessage.textContent = [...arguments].join(' ');
+            consoleOutputDiv.appendChild(logMessage);
+
+            consoleOutputDiv.scrollTop = consoleOutputDiv.scrollHeight;
+        };
+
+        const consoleInput = document.getElementById('console-input');
+        consoleInput.addEventListener('keydown', function (event) {
+            if (event.key === 'Enter') {
+                const command = consoleInput.value;
+
+                try {
+                    const result = eval(command);
+                    console.log(result);
+                } catch (error) {
+                    console.error('Error:', error);
+                }
+
+                consoleInput.value = '';
+            }
+        });
+
+        document.getElementById('clear-console').addEventListener('click', function () {
+            consoleOutputDiv.innerHTML = '';
+        });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        var consoleHidden = true;
+        var panelHidden = false;
+        var libraryHidden = false;
+
+        document.getElementById('toggle-console').addEventListener('click', function () {
+            const consoleElement = document.getElementsByClassName('console')[0];
+            const consoleOutput = document.getElementById('console-output')
+            const consoleInput = document.getElementById('console-input')
+
+            if (consoleHidden) {
+                document.getElementById('toggle-console').title = "Hide Console";
+
+                consoleElement.style.gridRow = "3 / 5"
+                consoleOutput.style.display = "block";
+                consoleInput.style.display = "block";
+                consoleHidden = false;
+
+                button = document.getElementById("con-tog");
+                button.classList.remove("fa-toggle-up");
+                button.classList.add("fa-toggle-down");
+            }
+            else {
+                document.getElementById('toggle-console').title = "Show Console";
+
+                consoleElement.style.gridRow = "4 / 5"
+                consoleOutput.style.display = "none";
+                consoleInput.style.display = "none";
+                consoleHidden = true
+
+                button = document.getElementById("con-tog")
+                button.classList.remove("fa-toggle-down");
+                button.classList.add("fa-toggle-up");
+            }
+        });
+
+        document.getElementById('toggle-panel').addEventListener('click', function () {
+            const panelElement = document.getElementsByClassName('panel')[0];
+            const panelOutput = document.getElementById('panel-output')
+
+            if (panelHidden) {
+                document.getElementById('toggle-panel').title = "Hide Panel";
+
+                panelElement.style.gridRow = "3 / 5"
+                panelOutput.style.display = "block";
+                panelHidden = false
+
+                button = document.getElementById("pan-tog");
+                button.classList.remove("fa-toggle-up");
+                button.classList.add("fa-toggle-down");
+
+                document.getElementsByClassName('library')[0].style.gridRow = "2 / 3";
+
+            }
+            else {
+                document.getElementById('toggle-panel').title = "Show Panel";
+
+                panelElement.style.gridRow = "4 / 5"
+                panelOutput.style.display = "none";
+                panelHidden = true;
+
+                button = document.getElementById("pan-tog")
+                button.classList.remove("fa-toggle-down");
+                button.classList.add("fa-toggle-up");
+
+                document.getElementsByClassName('library')[0].style.gridRow = "2 / 4";
+            }
+        });
+
+        document.getElementById('toggle-library').addEventListener('click', function () {
+            const libraryElement = document.getElementsByClassName('library')[0];
+            const libraryOutput = document.getElementById('library-output')
+            const libraryTitle = document.getElementById('library-title')
+
+            if (libraryHidden) {
+                document.getElementById('toggle-library').title = "Hide Library";
+
+                libraryElement.style.gridColumn = "3 / 5"
+                libraryOutput.style.display = "block";
+                libraryTitle.style.display = "inline";
+                libraryHidden = false;
+
+                button = document.getElementById("lib-tog")
+                button.classList.remove("fa-toggle-left");
+                button.classList.add("fa-toggle-right");
+            }
+            else {
+                document.getElementById('toggle-library').title = "Show Library";
+
+                libraryElement.style.gridColumn = "4 / 5"
+                libraryOutput.style.display = "none";
+                libraryTitle.style.display = "none";
+                libraryHidden = true
+
+                button = document.getElementById("lib-tog")
+                button.classList.remove("fa-toggle-right");
+                button.classList.add("fa-toggle-left");
+            }
+        });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        canvas_vp_count = 9
+
+        // vp_width = document.documentElement.clientWidth - 80
+        // vp_height = document.documentElement.clientHeight - 80
+
+        vp_width = screen.width;
+        vp_height = screen.height;
+
+        min_zoom = 0.4
+        max_zoom = 2.5
+
+        var canvas = new fabric.Canvas('canvas', {
+            width: vp_width,
+            height: vp_height,
+            backgroundColor: '#d1d1d1'
+        })
+
+        // .setDimensions({ width: '100%', height: '100%' }, { cssOnly: true });
+
+        fabric.Object.prototype.hasControls = false;
+
+        vpt = canvas.viewportTransform;
+
+
+
+        document.getElementById('new-canvas').addEventListener('click', function () {
+            canvas.clear();
+
+            fabric.Object.prototype.hasControls = false;
+        });
+
+        document.getElementById('open-canvas').addEventListener('click', function () {
+            document.getElementById('canvas-file').click();
+        });
+
+        document.getElementById('canvas-file').addEventListener('change', function (event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                try {
+                    const json = e.target.result;
+                    const parsedJson = JSON.parse(json);
+
+                    canvas.clear();
+
+                    canvas.loadFromJSON(parsedJson, canvas.renderAll.bind(canvas));
+                    document.getElementById('canvas-file').value = '';
+                } catch (error) {
+                    console.error('Error loading canvas from JSON:', error);
+                }
+            };
+
+            reader.readAsText(file);
+        });
+
+        document.getElementById('save-canvas').addEventListener('click', function () {
+            const json = JSON.stringify(canvas);
+
+            const blob = new Blob([json], { type: 'application/json' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'myVisualProgram.json';
+            link.click();
+
+            URL.revokeObjectURL(link.href);
+        });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        canvas.on('mouse:wheel', function (opt) {
+            var delta = opt.e.deltaY;
+
+            opt.e.preventDefault();
+            opt.e.stopPropagation();
+
+            var oldzoom = canvas.getZoom();
+            zoom = oldzoom * 0.999 ** delta;
+
+            if (zoom < min_zoom) zoom = min_zoom;
+            if (zoom > max_zoom) zoom = max_zoom;
+
+            var vpt = canvas.viewportTransform;
+
+            vpt[0] = zoom;
+            vpt[3] = zoom;
+
+            vpt[4] = (zoom / oldzoom) * (vpt[4] - vp_width / 2) + vp_width / 2;
+            vpt[5] = (zoom / oldzoom) * (vpt[5] - vp_height / 2) + vp_height / 2;
+
+            this.requestRenderAll();
+        });
+
+
+        let isCtrlPressed = true;
+
+        // document.addEventListener('keydown', function (e) {
+        //     if (e.key === 'Control') {
+        //         isCtrlPressed = true;
+        //         button = document.getElementById("canvas-ptr")
+        //         button.classList.remove("fa-hand-paper-o");
+        //         button.classList.add("fa-mouse-pointer");
+        //         // canvas.style.cursor = 'grab';
+        //     }
+        // });
+
+        // document.addEventListener('keyup', function (e) {
+        //     if (e.key === 'Control') {
+        //         isCtrlPressed = false;
+        //         button = document.getElementById("canvas-ptr")
+        //         button.classList.remove("fa-mouse-pointer");
+        //         button.classList.add("fa-hand-paper-o");
+        //         // canvas.style.cursor = 'default';
+        //     }
+        // });
+
+
+        canvas.on('mouse:down', function (opt) {
+
+            var evt = opt.e;
+
+            if (evt.ctrlKey === true) {
+
+                this.isDragging = true;
+                this.selection = false;
+                this.lastPosX = evt.clientX;
+                this.lastPosY = evt.clientY;
+                // canvas.style.cursor = 'grabbing';
+            }
+        });
+
+        // document.getElementById('zoom-input').addEventListener('input', function() {
+        //     canvas.viewportTransform[0] = canvas.viewportTransform[3] = document.getElementById('zoom-input').value;
+        // })
+
+        canvas.on('mouse:move', function (opt) {
+            var evt = opt.e;
+            var vpt = canvas.viewportTransform;
+            var centerX = vpt[4] - canvas.getWidth() / 2;
+            var centerY = vpt[5] - canvas.getHeight() / 2;
+
+            document.getElementById('width').textContent = vp_width;
+            document.getElementById('height').textContent = vp_height;
+            document.getElementById('vptx').textContent = this.viewportTransform[4];
+            document.getElementById('vpty').textContent = this.viewportTransform[5];
+            document.getElementById('zmx').textContent = this.viewportTransform[0];
+            document.getElementById('zmy').textContent = this.viewportTransform[3];
+            document.getElementById('centx').textContent = centerX;
+            document.getElementById('centy').textContent = centerY;
+            document.getElementById('clntx').textContent = evt.clientX;
+            document.getElementById('clnty').textContent = evt.clientY;
+
+
+            if (this.isDragging) {
+                var e = opt.e;
+                var vpt = this.viewportTransform;
+
+                var zoom = canvas.getZoom();
+                newvpt4 = vpt[4] + e.clientX - this.lastPosX
+                newvpt5 = vpt[5] + e.clientY - this.lastPosY
+
+                if (newvpt4 < vp_width * zoom && newvpt4 > -vp_width * (2 * zoom - 1)) {
+                    vpt[4] += e.clientX - this.lastPosX;
+                    this.requestRenderAll();
+                    this.lastPosX = e.clientX;
+                }
+                if (newvpt5 < vp_height * zoom && newvpt5 > -vp_height * (2 * zoom - 1)) {
+                    vpt[5] += e.clientY - this.lastPosY;
+                    this.requestRenderAll();
+                    this.lastPosY = e.clientY;
+                }
+
+            }
+
+        });
+
+        canvas.on('mouse:up', function (opt) {
+            if (isCtrlPressed) {
+                // canvas.style.cursor = 'grab';
+            } else {
+                // canvas.style.cursor = 'default';
+            }
+            this.setViewportTransform(this.viewportTransform);
+            this.isDragging = false;
+            this.selection = true;
+        });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        document.getElementById('del-obj').addEventListener('click', function () {
+            const activeObject = canvas.getActiveObject();
+            if (activeObject) {
+                canvas.remove(activeObject);
+            }
+        });
+
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Delete') {
+                const activeObject = canvas.getActiveObject();
+                if (activeObject) {
+                    canvas.remove(activeObject);
+                }
+            }
+        });
+
+        document.getElementById('back-center').addEventListener('click', function () {
+            canvas.viewportTransform[4] = canvas.viewportTransform[5] = 0;
+            canvas.renderAll();
+        });
+
+        document.getElementById('zoom-in').addEventListener('click', function () {
+            var oldzoom = canvas.getZoom();
+            zoom = oldzoom + 1;
+
+            if (zoom < min_zoom) zoom = min_zoom;
+            if (zoom > max_zoom) zoom = max_zoom;
+
+            var vpt = canvas.viewportTransform;
+
+            vpt[0] = zoom;
+            vpt[3] = zoom;
+
+            vpt[4] = (zoom / oldzoom) * (vpt[4] - vp_width / 2) + vp_width / 2;
+            vpt[5] = (zoom / oldzoom) * (vpt[5] - vp_height / 2) + vp_height / 2;
+
+            canvas.requestRenderAll();
+        });
+
+        document.getElementById('zoom-out').addEventListener('click', function () {
+            var oldzoom = canvas.getZoom();
+            zoom = oldzoom - 1;
+
+            if (zoom < min_zoom) zoom = min_zoom;
+            if (zoom > max_zoom) zoom = max_zoom;
+
+            var vpt = canvas.viewportTransform;
+
+            vpt[0] = zoom;
+            vpt[3] = zoom;
+
+            vpt[4] = (zoom / oldzoom) * (vpt[4] - vp_width / 2) + vp_width / 2;
+            vpt[5] = (zoom / oldzoom) * (vpt[5] - vp_height / 2) + vp_height / 2;
+
+            canvas.requestRenderAll();
+        });
+
+
+        // document.getElementById('grab-canvas').addEventListener('click', function() {
+        //     if (isCtrlPressed)
+        //     {
+        //         isCtrlPressed = false;
+        //         button = document.getElementById("canvas-ptr")
+        //         button.classList.remove("fa-mouse-pointer");
+        //         button.classList.add("fa-hand-paper-o");
+        //         canvas.style.cursor = 'default';
+        //     }
+        //     else
+        //     {
+        //         isCtrlPressed = true;
+        //         button = document.getElementById("canvas-ptr")
+        //         button.classList.remove("fa-hand-paper-o");
+        //         button.classList.add("fa-mouse-pointer");
+        //         canvas.style.cursor = 'grabbing';
+        //     }
+        // });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        var rect = new fabric.Rect({
+            left: -25,
+            top: -25,
+            fill: 'red',
+            width: 50,
+            height: 50
+        });
+
+        var circle = new fabric.Circle({
+            left: 1253,
+            top: -25,
+            radius: 25,
+            fill: 'blue'
+        });
+
+        var rect1 = new fabric.Rect({
+            left: 1253,
+            top: 545,
+            fill: 'red',
+            width: 50,
+            height: 50
+        });
+
+        var circle1 = new fabric.Circle({
+            left: -25,
+            top: 545,
+            radius: 25,
+            fill: 'blue'
+        });
+
+        var tri = new fabric.Triangle({
+            left: 614,
+            top: 260,
+            height: 50,
+            base: 50,
+            fill: 'blue'
+        });
+
+        rect.on('selected', function () {
+            console.log('selected a rectangle');
+        });
+
+
+
+        canvas.add(rect)
+        canvas.add(circle)
+        canvas.add(rect1)
+        canvas.add(circle1)
+        canvas.add(tri)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        // const { ipcRenderer } = require('electron');
+
+        // document.querySelector('.minimize').addEventListener('click', () => {
+        //     ipcRenderer.send('minimize-window');
+        // });
+
+        // document.querySelector('.maximize').addEventListener('click', () => {
+        //     ipcRenderer.send('maximize-window');
+        // });
+
+        // document.querySelector('.close').addEventListener('click', () => {
+        //     ipcRenderer.send('close-window');
+        // });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        let selectedObject = null;
+        let isConnecting = false;
+        let connections = [];
+
+        function updateLinePosition(line, object1, object2) {
+            const firstmidX = object1.left + object1.width / 2;
+            const firstmidY = object1.top + object1.height / 2;
+            const secondmidX = object2.left + object2.width / 2;
+            const secondmidY = object2.top + object2.height / 2;
+
+            line.set({
+                x1: firstmidX,
+                y1: firstmidY,
+                x2: secondmidX,
+                y2: secondmidY
+            });
+
+            line.setCoords();
+            canvas.requestRenderAll();
+        }
+
+        canvas.on('selection:created', function (opt) {
+            const selected = opt.selected;
+            if (selected.length === 1 && !isConnecting) {
+                selectedObject = selected[0];
+            } else if (isConnecting) {
+                const secondObject = selected[0];
+
+                if (selectedObject && secondObject) {
+                    const firstmidX = selectedObject.left + selectedObject.width / 2;
+                    const firstmidY = selectedObject.top + selectedObject.height / 2;
+                    const secondmidX = secondObject.left + secondObject.width / 2;
+                    const secondmidY = secondObject.top + secondObject.height / 2;
+
+                    const line = new fabric.Line([firstmidX, firstmidY, secondmidX, secondmidY], {
+                        stroke: 'grey',
+                        strokeWidth: 2,
+                        selectable: false,
+                    });
+
+                    canvas.add(line);
+                    line.sendToBack();
+                    canvas.renderAll();
+
+
+                    connections.push({
+                        object1: selectedObject,
+                        object2: secondObject,
+                        line: line
+                    });
+
+                    isConnecting = false;
+                    selectedObject = null;
+                    document.getElementById('connect-btn').disabled = false;
+                }
+            }
+        });
+
+
+
+
+        canvas.on('selection:cleared', function () {
+            console.log("Hello")
+            if (!isConnecting) {
+                selectedObject = null;
+            }
+        });
+
+        document.getElementById('connect-btn').addEventListener('click', function () {
+            if (selectedObject) {
+                isConnecting = true;
+                document.getElementById('connect-btn').disabled = true;
+                canvas.discardActiveObject();
+                canvas.requestRenderAll();
+            } else {
+                alert('Select an object first to start creating a connection.');
+            }
+        });
+
+        canvas.on('object:moving', function (e) {
+            const movingObject = e.target;
+
+            connections.forEach((connection) => {
+                if (connection.object1 === movingObject || connection.object2 === movingObject) {
+
+                    updateLinePosition(connection.line, connection.object1, connection.object2);
+                }
+            });
+        });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        const componentLibrary = document.getElementById('library-output');
+        componentLibrary.addEventListener('dragstart', function (e) {
+            e.dataTransfer.setData('component', e.target.dataset.component);
+            console.log(e.target.dataset.component, 'drag start')
+        });
+
+        canvas.upperCanvasEl.addEventListener('drop', function (e) {
+            e.preventDefault();
+
+            const pointer = canvas.getPointer(e);
+
+            const componentType = e.dataTransfer.getData('component');
+
+            if (componentType === 'rect') {
+                const rect = new fabric.Rect({
+                    left: pointer.x,
+                    top: pointer.y,
+                    fill: 'lightblue',
+                    width: 100,
+                    height: 60,
+                    stroke: 'black',
+                    strokeWidth: 2
+                });
+                canvas.add(rect);
+            } else if (componentType === 'circle') {
+                const circle = new fabric.Circle({
+                    left: pointer.x,
+                    top: pointer.y,
+                    fill: 'lightgreen',
+                    radius: 50,
+                    stroke: 'black',
+                    strokeWidth: 2
+                });
+                canvas.add(circle);
+            } else if (componentType === 'triangle') {
+                //console.log("hello!");
+                var tri1 = new fabric.Triangle({
+                    left: pointer.x,
+                    top: pointer.y,
+                    height: 50,
+                    base: 50,
+                    fill: 'blue',
+                    stroke: 'black',
+                    strokeWidth: 2
+                });
+                canvas.add(tri1);
+                canvas.renderAll();
+            }
+        });
+
+        canvas.upperCanvasEl.addEventListener('dragover', function (e) {
+            e.preventDefault();
+        });
+
+        canvas.on('object:selected', function (e) {
+            const activeObject = e.target;
+            console.log('Selected object:', activeObject);
+        });
+
+        canvas.on('object:modified', function () {
+            console.log('Object modified');
+        });
+
+
+
+
+
+
+
+
+
+
+
+
+        const gridSize = 20;
+
+        canvas.on('object:moving', function (e) {
+            const obj = e.target;
+            obj.set({
+                left: Math.round(obj.left / gridSize) * gridSize,
+                top: Math.round(obj.top / gridSize) * gridSize
+            });
+        });
+
+        function detectCollision(obj1, obj2) {
+            const obj1Bounds = obj1.getBoundingRect();
+            const obj2Bounds = obj2.getBoundingRect();
+
+            return !(
+                obj1Bounds.left > obj2Bounds.left + obj2Bounds.width ||
+                obj1Bounds.left + obj1Bounds.width < obj2Bounds.left ||
+                obj1Bounds.top > obj2Bounds.top + obj2Bounds.height ||
+                obj1Bounds.top + obj1Bounds.height < obj2Bounds.top
+            );
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        document.getElementById('save-btn').addEventListener('click', function () {
+
+            const activeObject = canvas.getActiveObject();
+            if (!activeObject) {
+                alert('Please select an object to save.');
+                return;
+            }
+
+            const json = JSON.stringify(activeObject.toObject());
+
+            const blob = new Blob([json], { type: 'application/json' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'selected-object.json';
+            link.click();
+
+            // Clean up
+            URL.revokeObjectURL(link.href);
+        });
+
+        document.getElementById('load-btn').addEventListener('click', function () {
+            document.getElementById('load-file').click();
+        });
+
+        document.getElementById('load-file').addEventListener('change', function (event) {
+            const file = event.target.files[0];
+            if (!file) {
+                return;
+            }
+
+            const reader = new FileReader();
+
+            reader.onload = function (e) {
+                const json = e.target.result;
+
+                fabric.util.enlivenObjects([JSON.parse(json)], (objects) => {
+                    objects.forEach((obj) => canvas.add(obj));
+                });
+
+                canvas.renderAll();
+            };
+
+            reader.readAsText(file);
+        });
+
+
+
+
+        function loadObjectFromJSONAndDisplayOnButton(jsonString, buttonID) {
+            fabric.util.enlivenObjects([JSON.parse(jsonString)], (objects) => {
+                const obj = objects[0];
+                const tempCanvas = new fabric.StaticCanvas(null, { width: obj.width, height: obj.height, backgroundColor: '#2A2A3C' });
+
+                tempCanvas.add(obj);
+                tempCanvas.renderAll();
+
+                const imageUrl = tempCanvas.toDataURL();
+
+                document.getElementById(buttonID).style.backgroundImage = `url(${imageUrl})`;
+                document.getElementById(buttonID).style.backgroundSize = 'contain';
+                document.getElementById(buttonID).style.backgroundRepeat = 'no-repeat';
+                document.getElementById(buttonID).style.width = obj.width + 'px';
+                document.getElementById(buttonID).style.height = obj.height + 'px';
+                document.getElementById(buttonID).style.border = 'none';
+            });
+        }
+
+
+        // const jsonObject1 = '{"type":"rect","version":"3.6.2","originX":"left","originY":"top","left":0,"top":0,"width":50,"height":50,"fill":"red","stroke":null,"strokeWidth":1,"strokeDashArray":null,"strokeLineCap":"butt","strokeDashOffset":0,"strokeLineJoin":"miter","strokeMiterLimit":4,"scaleX":1,"scaleY":1,"angle":0,"flipX":false,"flipY":false,"opacity":1,"shadow":null,"visible":true,"clipTo":null,"backgroundColor":"","fillRule":"nonzero","paintFirst":"fill","globalCompositeOperation":"source-over","transformMatrix":null,"skewX":0,"skewY":0,"rx":0,"ry":0}';
+        // const jsonObject2 = '{"type":"circle","version":"3.6.2","originX":"left","originY":"top","left":0,"top":0,"width":50,"height":50,"fill":"blue","stroke":null,"strokeWidth":1,"strokeDashArray":null,"strokeLineCap":"butt","strokeDashOffset":0,"strokeLineJoin":"miter","strokeMiterLimit":4,"scaleX":1,"scaleY":1,"angle":0,"flipX":false,"flipY":false,"opacity":1,"shadow":null,"visible":true,"clipTo":null,"backgroundColor":"","fillRule":"nonzero","paintFirst":"fill","globalCompositeOperation":"source-over","transformMatrix":null,"skewX":0,"skewY":0,"radius":25,"startAngle":0,"endAngle":6.283185307179586}';
+
+
+        const jsonrect = '{"type":"rect","version":"3.6.2","originX":"left","originY":"top","left":0,"top":0,"width":100,"height":60,"fill":"lightblue","stroke":"black","strokeWidth":2,"strokeDashArray":null,"strokeLineCap":"butt","strokeDashOffset":0,"strokeLineJoin":"miter","strokeMiterLimit":4,"scaleX":1,"scaleY":1,"angle":0,"flipX":false,"flipY":false,"opacity":1,"shadow":null,"visible":true,"clipTo":null,"backgroundColor":"#888","fillRule":"nonzero","paintFirst":"fill","globalCompositeOperation":"source-over","transformMatrix":null,"skewX":0,"skewY":0,"rx":0,"ry":0}'
+        const jsoncircle = '{"type":"circle","version":"3.6.2","originX":"left","originY":"top","left":0,"top":0,"width":100,"height":100,"fill":"lightgreen","stroke":"black","strokeWidth":2,"strokeDashArray":null,"strokeLineCap":"butt","strokeDashOffset":0,"strokeLineJoin":"miter","strokeMiterLimit":4,"scaleX":1,"scaleY":1,"angle":0,"flipX":false,"flipY":false,"opacity":1,"shadow":null,"visible":true,"clipTo":null,"backgroundColor":"#888","fillRule":"nonzero","paintFirst":"fill","globalCompositeOperation":"source-over","transformMatrix":null,"skewX":0,"skewY":0,"radius":50,"startAngle":0,"endAngle":6.283185307179586}'
+        const jsontriangle = '{"type":"triangle","version":"3.6.2","originX":"left","originY":"top","left":0,"top":0,"width":100,"height":50,"fill":"blue","stroke":null,"strokeWidth":1,"strokeDashArray":null,"strokeLineCap":"butt","strokeDashOffset":0,"strokeLineJoin":"miter","strokeMiterLimit":4,"scaleX":1,"scaleY":1,"angle":0,"flipX":false,"flipY":false,"opacity":1,"shadow":null,"visible":true,"clipTo":null,"backgroundColor":"#888","fillRule":"nonzero","paintFirst":"fill","globalCompositeOperation":"source-over","transformMatrix":null,"skewX":0,"skewY":0}'
+
+        loadObjectFromJSONAndDisplayOnButton(jsonrect, 'rect-button');
+        loadObjectFromJSONAndDisplayOnButton(jsoncircle, 'circle-button');
+        loadObjectFromJSONAndDisplayOnButton(jsontriangle, 'triangle-button');
+
+
+    </script>
+</body>
+
+</html>
